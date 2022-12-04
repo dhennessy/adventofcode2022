@@ -12,14 +12,14 @@ fn main() {
 fn part1(input: &str) -> u64 {
     input.lines()
     .map(|line| parse_ranges(line))
-    .filter(|r| contains_range(&r.0, &r.1))
+    .filter(|(a,b)| contains_range(a, b))
     .count() as u64
 }
 
 fn part2(input: &str) -> u64 {
     input.lines()
     .map(|line| parse_ranges(line))
-    .filter(|r| overlaps_range(&r.0, &r.1))
+    .filter(|(a,b)| overlaps_range(a, b))
     .count() as u64
 }
 
