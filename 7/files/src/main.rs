@@ -17,8 +17,6 @@ impl Node {
     }
 
     fn add_child(&mut self, child: Rc<RefCell<Node>>) {
-        // println!("ADD {} += {}", self.name, child.borrow().name);
-        // child.borrow_mut().parent = Rc::clone(&self);
         self.children.push(child);
     }
 }
@@ -43,7 +41,6 @@ fn part1(input: &str) -> usize {
     let mut size = 0;
     for dir in all_dirs(tree) {
         let dir_size = node_size(dir);
-        // println!("SIZE {} => {}", node.borrow().name, dir_size);
         if dir_size <= 100000 { 
             size += dir_size;
         }
@@ -63,7 +60,6 @@ fn part2(input: &str) -> usize {
     sizes.sort();
 
     for s in sizes {
-        // println!("SIZE: {}", s);
         if used - s < needed {
             return s;
         }
@@ -71,34 +67,19 @@ fn part2(input: &str) -> usize {
     0
 }
 
-fn dump_node(node: Rc<RefCell<Node>>, indent: &str) {
-    let info = match node.borrow().size {
-        Some(s) => s,
-        None => 0
-    };
-    println!("{} {} {}", indent, node.borrow().name, info);
-    let next_indent = &format!("  {}", indent);
-    for child in node.borrow().children.clone() {
-        dump_node(Rc::clone(&child), next_indent);
-    }
-}
-
 fn node_size(node: Rc<RefCell<Node>>) -> usize {
     let mut size = 0;
     for child in node.borrow().children.clone() {
-        // println!("CONSIDER: {}", child.borrow().name);
         size += match child.borrow().size {
             Some(s) => s,
             None => node_size(Rc::clone(&child))
         }
     }
-    // println!("SIZE: {} = {}", node.borrow().name, size);
     size
 }
 
 fn all_dirs(node: Rc<RefCell<Node>>) -> Vec<Rc<RefCell<Node>>> {
     let mut vec = Vec::new();
-    // println!("ENUM: {}", node.borrow().name);
     vec.push(Rc::clone(&node));
     for child in node.borrow().children.clone() {
         if let None = child.borrow().size {
@@ -116,7 +97,6 @@ fn parse_tree(input: &str) -> Rc<RefCell<Node>> {
 
     for line in input.lines() {
         if line.starts_with("$") {
-            // println!("CMD: {}", line);
             let c = re.captures(line).unwrap();
             match &c[1] {
                 "ls" => (),
@@ -138,18 +118,14 @@ fn parse_tree(input: &str) -> Rc<RefCell<Node>> {
                             }
                         }
                     }    
-                    // println!("CWD: {}", cwd.borrow().name);    
-                    // dump_node(Rc::clone(&cwd), ">");            
                 },
                 &_ => todo!()
             }
         } else {
-            // println!("PARSE: {}", line);
             let mut n = Node::from_str(line).unwrap();
             n.parent = Some(Rc::clone(&cwd));
             cwd.borrow_mut().add_child(Rc::new(RefCell::new(n)));
         }
-        // dump_node(Rc::clone(&root), "");
     }
     root
 }
@@ -178,7 +154,6 @@ fn test_parse_tree() {
 #[test]
 fn test_node_size() {
     let root = parse_tree(SAMPLE);
-    dump_node(Rc::clone(&root), "");
     assert_eq!(node_size(root), 48381165);
 }
 
