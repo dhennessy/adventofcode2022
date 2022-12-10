@@ -45,7 +45,6 @@ fn decode_signal(input: &str) -> Vec<i64> {
                 (2, line.split_once(" ").unwrap().1.parse::<i64>().ok().unwrap())
             }
         )
-        // .map(|x| [1])
         .map(|(cnt,dx)| if cnt == 1 { vec![x] } else { let px = x; x += dx; vec![px, px] })
         .flatten()
         .collect()
